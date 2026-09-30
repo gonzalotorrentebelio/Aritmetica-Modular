@@ -200,32 +200,39 @@ def mcd(a:int,b:int)->int:
 
     return a
 
-def bezout(n:int, m:int) -> Tuple[int,int,int]:
-    """ Calcula el máximo común divisor d de dos enteros a y b junto con dos enteros x e y tales que
-            d=ax+by
+from typing import Tuple
+
+def bezout(n: int, m: int) -> Tuple[int, int, int]:
+    """Calcula el máximo común divisor d de dos enteros n y m junto con
+    dos enteros x e y tales que d = nx + my.
 
     Args:
-        a (int): Primer entero.
-        b (int): Segundo entero.
+        n (int): Primer entero.
+        m (int): Segundo entero.
     
-    Returns: (d,x,y)
+    Returns: (d, x, y)
         d (int): Máximo común divisor.
-        x (int): Coeficiente de a.
-        y (int): Coeficiente de b.
+        x (int): Coeficiente de n.
+        y (int): Coeficiente de m.
 
     Raises: None
 
     Examples:
-        bezout(6,10)=(2,2,-1)
+        bezout(6, 10) = (2, 2, -1)
     """
 
-    coord_x = (0, 1)
-    coord_y = (1, 0)
-    while m != 0:
-        n, m = m, n % m
-        coord_x, coord_y = coord_y - (m - (n % m)) // n * coord_x, coord_x
+    coord_x = [1, 0]
+    coord_y = [0, 1]
 
-    return m, coord_y[0], coord_y[1]
+    while m != 0:
+        q = n // m
+
+        n, m = m, n % m
+
+        coord_x[0], coord_x[1] = coord_x[1], coord_x[0] - q * coord_x[1]
+        coord_y[0], coord_y[1] = coord_y[1], coord_y[0] - q * coord_y[1]
+
+    return n, coord_x[0], coord_y[0]
 
 
 def mcd_n(nlist:List[int])->int:
