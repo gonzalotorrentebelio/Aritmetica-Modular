@@ -24,7 +24,7 @@ import sys
 dicc_operations = {                                                                                                     
                     "primo": modular.primo, 
                     "primos": modular.primos, 
-                    "factorizar": modular.factorizar,
+                    "factorizar": modular.factorizar_aux,
                     "mcd": modular.mcd,
                     "coprimos": modular.coprimos,
                     "pow": modular.potencia_mod_p,

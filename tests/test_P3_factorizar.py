@@ -7,8 +7,8 @@ from test_imatlab import try_command
     #(1,COMPLETAR),
     (2,{2:1}),
     (12,{2:2,3:1}),
-    (0,{})
-    #COMPLETAR
+    (0,{}),
+    (-12,{2:2,3:1})
 ])
 def test_factorizar_basico(n: int, salida_esperada: Dict[int,int]) -> None:
     assert(modular.factorizar(n)==salida_esperada)
@@ -19,7 +19,7 @@ def test_factorizar_basico(n: int, salida_esperada: Dict[int,int]) -> None:
     (2,"2: 1"),
     (12,"2: 2, 3: 1"),
     (0,"0"),
-    #COMPLETAR
+    (-12,"2: 2, 3: 1"),
 ])
 def test_factorizar_imatlab(n: int, salida_esperada: str) -> None:
     try_command(f"factorizar({n})",salida_esperada)

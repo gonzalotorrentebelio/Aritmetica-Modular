@@ -55,18 +55,21 @@ def es_primo(n:int)->bool:
     if n < 2:
         return False
     
-    cota_sup = math.floor(n ** (1/2)) + 1
-
-    if n != 2 and n % 2 == 0:
+    if n < 4:
+        return True
+    
+    if n % 2 == 0 or n % 3 == 0:
         return False
-
-    for divisor in range(3, cota_sup, 2):  #recorrer los números impares únicamente, mayor eficiencia
-        if n % divisor == 0:
+    
+    cota_sup = math.sqrt(n)
+    divisor = 5
+    while divisor <= cota_sup:
+        if n % divisor == 0 or n % (divisor + 2) == 0:  
             return False
+        divisor += 6   #Cada 6, 4 son no primos al 100%. Los divisores de 2, los de 3
 
     return True
 
-    #si quiero bajar el tiempo de estos programas lo que peudo hacer es buscar en la demostración de moodle de la funcion pi(n) - n/log(n) y encontrar ahi las cotas inferiores o superiores para buscar números primos
 
 def primos(a,b)->str:
     
@@ -92,24 +95,39 @@ def lista_primos(a,b)-> List[int]:
     Examples:
         lista_primos(1,11)=[2,3,5,7]
     """
-    prime_list = []
+    
     if a < 2:
         a = 2
-    
-    elif a >= b:
-        return []
-    
-    if a == 2:
-        prime_list.append(2)
-        a = 3
 
-    for num in range(a, b, 2):   #recorrer los números impares únicamente, mayor eficiencia
-        if es_primo(num):
-            prime_list.append(num)
+    if a >= b:
+        return []
+
+    tabla = [True] * b
+    tabla[0] = False
+    tabla[1] = False
+
+    p = 2
+    while p * p < b:
+        if tabla[p]:
+            for m in range(p*p, b, p):
+                tabla[m] = False
+        p += 1
+
+    lista_primos = []
+    for i in range(a, b):
+        if tabla[i]:
+            lista_primos.append(i)
     
-    return prime_list
+    return lista_primos
+
+def factorizar_aux(n:int)->str:
+    dic_fact = factorizar(n)
+    if dic_fact == {}:
+        return f"{n}"
     
-    
+    else:
+        return str(dic_fact)[1:-1]
+
 
 def factorizar(n:int)->Dict[int,int]:
     """ Recibe  un entero n y devuelve un diccionario cuyas claves son los primos que dividen a n y sus valores los
@@ -127,7 +145,42 @@ def factorizar(n:int)->Dict[int,int]:
         factorizar(12)={2: 2, 3: 1}
         factorizar(0)={}
     """
-    pass
+    
+    if n == 0 or n == 1 or n == -1:
+        return {}
+    
+    dic = {} 
+    n = abs(n)
+
+    for p in range(2,4):
+        count = 0
+        while n % p == 0:
+            n = n // p
+            count += 1
+        
+        if count > 0:
+            dic[p] = count
+
+    m = 5
+    while m * m <= n:  # es lo mismo que decir m <= cota_sup donde cota_sup = np.sqrt(n)
+        for d in (m, m + 2):
+            count = 0
+            while n % d == 0:
+                n = n // d
+                count += 1
+            
+            if count > 0:
+                dic[d] = count
+
+        m += 6
+
+    if n > 1:
+        dic[n] = 1
+    
+    return dic
+    
+
+
 
 
 def mcd(a:int,b:int)->int:

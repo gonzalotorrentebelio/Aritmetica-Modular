@@ -79,8 +79,8 @@ def profile(in_file:str, out_file:str):
 if __name__ == "__main__":
     #Inicar el listado de ficheros de entrada y de salida para procesar
     #Comentar, añadir o eliminar ficheros según sea necesario.
-    in_files=["primosTest.txt",]
-    out_files=["primosTest_obtained.txt",]
+    in_files=["factorTest.txt"]
+    out_files=["factorTest_obtained.txt"]
     
     # in_files=["primosTest.txt","factorTest.txt","mcdTest.txt","potenciaTest.txt",
     #            "invTest.txt","eulerTest.txt","sistemaTest.txt","cuadraticaTest.txt"]
