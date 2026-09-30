@@ -221,18 +221,14 @@ def bezout(n: int, m: int) -> Tuple[int, int, int]:
         bezout(6, 10) = (2, 2, -1)
     """
 
-    coord_x = [1, 0]
-    coord_y = [0, 1]
+    coord_n = [1, 0]
+    coord_m = [0, 1]
 
     while m != 0:
-        q = n // m
+        d = n // m
+        n, m, coord_n, coord_m = m, n % m, coord_m, [coord_n[0] - d * coord_m[0], coord_n[1] - d * coord_m[1]] # Algoritmo de euclides, pongo el grande como primero y calculo coord
 
-        n, m = m, n % m
-
-        coord_x[0], coord_x[1] = coord_x[1], coord_x[0] - q * coord_x[1]
-        coord_y[0], coord_y[1] = coord_y[1], coord_y[0] - q * coord_y[1]
-
-    return n, coord_x[0], coord_y[0]
+    return n, coord_n[0], coord_n[1]
 
 
 def mcd_n(nlist:List[int])->int:
