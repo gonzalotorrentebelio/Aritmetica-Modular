@@ -179,10 +179,6 @@ def factorizar(n:int)->Dict[int,int]:
     
     return dic
     
-
-
-
-
 def mcd(a:int,b:int)->int:
     """ Calcula el máximo común divisor de dos enteros a y b.
     Args:
@@ -197,7 +193,12 @@ def mcd(a:int,b:int)->int:
     Examples:
         mcd(10,15)=5
     """
-    pass
+    a, b = abs(a), abs(b)
+
+    while b != 0:
+        a, b = b, a % b
+
+    return a
 
 def bezout(n:int, m:int) -> Tuple[int,int,int]:
     """ Calcula el máximo común divisor d de dos enteros a y b junto con dos enteros x e y tales que
@@ -217,7 +218,14 @@ def bezout(n:int, m:int) -> Tuple[int,int,int]:
     Examples:
         bezout(6,10)=(2,2,-1)
     """
-    pass
+
+    coord_x = (0, 1)
+    coord_y = (1, 0)
+    while m != 0:
+        n, m = m, n % m
+        coord_x, coord_y = coord_y - (m - (n % m)) // n * coord_x, coord_x
+
+    return m, coord_y[0], coord_y[1]
 
 
 def mcd_n(nlist:List[int])->int:
@@ -273,7 +281,8 @@ def coprimos(n:int,m:int)->bool:
         coprimos(14,20)=False
         coprimos(14,15)=True
     """
-    pass
+    return mcd(n, m) == 1
+
 
 
 def potencia_mod_p(base:int, exp:int, p:int) -> int:

@@ -7,7 +7,7 @@ ICAI, Universidad Pontificia Comillas
 Grupo: GPxxx
 Integrantes:
     - Gonzalo Miguel Torrente Belío
-    - xx
+    - Juan RIncón Pérez
 
 Descripción:
 Sistema interactivo IMAT-LAB de resolución de ecuaciones en aritmética modular.
@@ -26,6 +26,7 @@ dicc_operations = {
                     "primos": modular.primos, 
                     "factorizar": modular.factorizar_aux,
                     "mcd": modular.mcd,
+                    "bezout": modular.bezout,
                     "coprimos": modular.coprimos,
                     "pow": modular.potencia_mod_p,
                     "inv": modular.inversa_mod_p,
@@ -59,9 +60,7 @@ def run_commands(fin:TextIO,fout:TextIO):
     # leer linea
     #separamos la función de operación de los argumentos
     cond = True
-
     while cond:
-
         try:
             linea = fin.readline()
             linea = linea.strip()
@@ -73,7 +72,7 @@ def run_commands(fin:TextIO,fout:TextIO):
                 a = linea.find("(")
 
                 if a == -1 or not linea.endswith(")"):
-                    fout.write("NOP\n")   #hacer errores personalizados
+                    fout.write("NOP\n")
 
                 else:
                     operacion = linea[:a].strip()
