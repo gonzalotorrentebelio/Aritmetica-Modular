@@ -229,8 +229,8 @@ def bezout(n: int, m: int) -> Tuple[int, int, int]:
         n, m, coord_n, coord_m = m, n % m, coord_m, [coord_n[0] - d * coord_m[0], coord_n[1] - d * coord_m[1]] # Algoritmo de euclides, pongo el grande como primero y calculo coord
 
     if n < 0:
-        n, coord_n = -n, [-coord_n[0], -coord_n[1]]
-        
+        n, coord_n = -n, [-coord_n[0], -coord_n[1]] # Si es negativo se pasa a positivo 
+
     return n, coord_n[0], coord_n[1]
 
 
