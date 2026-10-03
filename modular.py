@@ -306,8 +306,8 @@ def _coprimos(n:int,m:int)->bool:
     """
     return mcd(n, m) == 1
 
-def coprimos(x:bool) -> str:
-    if x:
+def coprimos(n:int, m:int) -> str:
+    if _coprimos(n, m):
         return "Sí"
     return "No"
 
