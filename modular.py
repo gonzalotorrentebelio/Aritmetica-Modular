@@ -6,7 +6,7 @@ ICAI, Universidad Pontificia Comillas
 
 Grupo: GPxxx
 Integrantes:
-    - XX
+    - Juan Rincón Pérez
     - XX
 
 Descripción:
@@ -200,8 +200,6 @@ def mcd(a:int,b:int)->int:
 
     return a
 
-from typing import Tuple
-
 def bezout(n: int, m: int) -> Tuple[int, int, int]:
     """Calcula el máximo común divisor d de dos enteros n y m junto con
     dos enteros x e y tales que d = nx + my.
@@ -226,7 +224,7 @@ def bezout(n: int, m: int) -> Tuple[int, int, int]:
 
     while m != 0:
         d = n // m
-        n, m, coord_n, coord_m = m, n % m, coord_m, [coord_n[0] - d * coord_m[0], coord_n[1] - d * coord_m[1]] # Algoritmo de euclides, pongo el grande como primero y calculo coord
+        n, m, coord_n, coord_m = m, n % m, coord_m, [coord_n[0] - d * coord_m[0], coord_n[1] - d * coord_m[1]] # Algoritmo de euclides, pongo el grande como primero y calculo coords, las de m cambian a las de n y las nuevas de m se calculan como coord_n - (cuantos m quito) * coord_n
 
     if n < 0:
         n, coord_n = -n, [-coord_n[0], -coord_n[1]] # Si es negativo se pasa a positivo 
@@ -234,7 +232,7 @@ def bezout(n: int, m: int) -> Tuple[int, int, int]:
     return n, coord_n[0], coord_n[1]
 
 
-def mcd_n(nlist:List[int])->int:
+def mcd_n(nlist:List[int])-> int:
     """ Dados una lista de enteros, devuelve el máximo divisor común a todos ellos.
     Args:
         nList (List[int]): Lista de enteros.        
@@ -247,12 +245,20 @@ def mcd_n(nlist:List[int])->int:
     Examples:
         mcd([4,10,14])=2
     """
-    #Opcional
-    pass
+    # Opcional
+    resultado = nlist[0]
+
+    for i in nlist[1:]:
+        resultado = mcd(resultado, i)
+
+        if resultado == 1:
+            return 1 # mcd(x, y, z, ..., 1) = 1 porque el uno no tiene mas divisores positivos que el mismo
+
+    return resultado
 
 
 def bezout_n(nlist:List[int])->Tuple[int,List[int]]:
-    #Opcional
+    # Opcional
     """ Dada una lista de enteros [a_1,...,a_n], devuelve el máximo divisor común d a todos ellos y una
     lista de coeficientes [x_1,...,x_n] tal que
         d=a_1*x_1+...a_n*x_n
@@ -269,10 +275,21 @@ def bezout_n(nlist:List[int])->Tuple[int,List[int]]:
     Examples
         bezout_n([4,10,14])=(2,[-2,1,0])
     """
-    pass
+    # Igual que en el mcd_n, vamos haciendo bezout de dos en dos y guardamos los coeficientes de forma que a1x1 + a2x2 + a3x3 + ... = mcd(x1, x2, x3,...) podemos resolver a1x1 + a2x2 = mcd(x1,x2) = d1, entonces queda A1d1 + a3x3 = mcd(x1,x2,x3) ya que mcd (d1, x3,...) es igual, luego solo queda ver que coord_finales = a1 * A1, a2*A1. Hay que ir multiplicando por los nuevos que se consiguen
+    resultado_mcd, coord_0, coord_1 = bezout(nlist[0], nlist[1])
+    coeficientes = [coord_0, coord_1]
 
+    for i in nlist[2:]:
+        resultado_mcd, coord_anteriores, coord_i = bezout(resultado_mcd, i)
 
-def coprimos(n:int,m:int)->bool:
+        for j in range(len(coeficientes)):
+            coeficientes[j] *= coord_anteriores
+
+        coeficientes.append(coord_i)
+
+    return coeficientes
+
+def _coprimos(n:int,m:int)->bool:
     """ Determina si dos enteros son coprimos.
     Args:
         a (int): Primer entero.
@@ -289,6 +306,10 @@ def coprimos(n:int,m:int)->bool:
     """
     return mcd(n, m) == 1
 
+def coprimos(x:bool) -> str:
+    if x:
+        return "Sí"
+    return "No"
 
 
 def potencia_mod_p(base:int, exp:int, p:int) -> int:
