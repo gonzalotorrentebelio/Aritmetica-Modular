@@ -420,7 +420,41 @@ def resolver_sistema_congruencias(alist:List[int],blist:List[int],plist:List[int
         resolver_sistema_congruencias([2],[4],[6])=(2,3)
         resolver_sistema_congruencias([1,4],[1,7],[3,11])=(10,33)
     """
-    pass
+    # Teorema Chino del resto incremental. En vez de contruir las soluciones con la fórmula se construyen con la definición de congruencia
+    # Si tenemos X ≅ A (mod p) -> X - A = p * k, entonces sacaremos que X = A + p * k como primera solución. X ≅ B (mod q) -> X - B = q * t,
+    # pero ya tenemos una expresión para X así que A + p * k - B = q * t, que despejando me queda p * k = B - A + q * t -> p * k ≅ B - A (mod q)
+    # y ahora k es nuestra incógnita (x particular) que sumaremos a la x general multiplicada por p ya que x = A + p*k
+    # Se puede ver como que la solucion de la primera es una lista de números x = A + p * k, con k variando. Con la segunda ecuación solo
+    # cogemos los de las listas que coincidan. Vamos haciendo esto con cada lista particularizando, y nos quedará un patrón de números con
+    # saltos entre ellos, que es el módulo final
+    x = 0
+    m = 1
+
+    for a, b, p in zip(alist, blist, plist):
+        div = mcd(a, p)
+
+        if b % div != 0:
+            raise IncompatibleEquationError
+
+        a, b, p = a // div, b // div, p // div
+        r = (inversa_mod_p(a, p) * b) % p
+
+        div = mcd(m, p)
+
+        if (r - x) % div != 0: # Como r - x sería nuestra b inicial no hay sol si b % div != 0
+            raise IncompatibleEquationError
+
+        m_red = m // div
+        p_red = p // div
+        dif = (r - x) // div
+
+        k = (dif * inversa_mod_p(m_red, p_red)) % p_red
+
+        x += m * k
+        m *= p_red
+        x %= m
+
+    return x, m
 
 
 def raiz_mod_p(n:int,p:int)->int:
