@@ -178,8 +178,13 @@ def factorizar(n:int)->Dict[int,int]:
         dic[n] = 1
     
     return dic
-    
-def mcd(a:int,b:int)->int:
+
+def mcd_imatlab(*args):
+    if len(args) == 2:
+        return mcd(args[0], args[1])
+    return mcd_n(list(args))
+
+def mcd(a:int,b:int = 0)->int:
     """ Calcula el máximo común divisor de dos enteros a y b.
     Args:
         a (int): Primer entero.
@@ -287,9 +292,9 @@ def bezout_n(nlist:List[int])->Tuple[int,List[int]]:
 
         coeficientes.append(coord_i)
 
-    return coeficientes
+    return resultado_mcd, coeficientes
 
-def _coprimos(n:int,m:int)->bool:
+def coprimos(n:int,m:int)->bool:
     """ Determina si dos enteros son coprimos.
     Args:
         a (int): Primer entero.
@@ -306,8 +311,8 @@ def _coprimos(n:int,m:int)->bool:
     """
     return mcd(n, m) == 1
 
-def coprimos(n:int, m:int) -> str:
-    if _coprimos(n, m):
+def _coprimos(n:int, m:int) -> str:
+    if coprimos(n, m):
         return "Sí"
     return "No"
 
