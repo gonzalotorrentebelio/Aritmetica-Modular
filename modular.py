@@ -354,7 +354,22 @@ def inversa_mod_p(n:int,p:int)->int:
     Examples:
         inversa_mod_p(2,7)=4
     """
-    pass
+    if p == 0:
+        raise IncompatibleEquationError
+
+    n %= p
+
+    resto_anterior, resto = p, n
+    coef_anterior, coef = 0, 1
+
+    while resto != 0:
+        cociente = resto_anterior // resto
+        resto_anterior, resto, coef_anterior, coef = resto, resto_anterior % resto, coef, coef_anterior - cociente * coef
+
+    if resto_anterior != 1:
+        raise IncompatibleEquationError
+
+    return coef_anterior % p
 
 
 def euler(n:int)->int:
@@ -461,6 +476,17 @@ def resolver_sistema_congruencias(alist:List[int],blist:List[int],plist:List[int
 
     return x, m
 
+def resolverSistema(*listas:List[int]) -> Tuple[int, int]:
+    alist = []
+    blist = []
+    plist = []
+    for a, b, p in listas:
+        alist.append(a)
+        blist.append(b)
+        plist.append(p)
+
+    return resolver_sistema_congruencias(alist, blist, plist)
+
 
 def raiz_mod_p(n:int,p:int)->int:
     """ Encuentra, si existe, una raíz cuadrada para un entero n módulo un número primo p.
@@ -479,7 +505,87 @@ def raiz_mod_p(n:int,p:int)->int:
         raiz_mod_p(2,7)=3
     """
     #Opcional
-    pass
+    n %= p
+
+    if p == 2 or n == 0:
+        return n
+
+    # p ≡ 3 (mod 4)
+    if p % 4 == 3:
+        x = pow(n, (p + 1) // 4, p)
+
+        if x * x % p != n:
+            raise IncompatibleEquationError
+
+        return x
+
+    # p ≡ 5 (mod 8)
+    if p % 8 == 5:
+        x = pow(n, (p + 3) // 8, p)
+
+        if x * x % p != n:
+            x = x * pow(2, (p - 1) // 4, p) % p
+
+        if x * x % p != n:
+            raise IncompatibleEquationError
+
+        return x
+
+    # p ≡ 1 (mod 8): primero comprobamos que exista raíz
+    if pow(n, (p - 1) // 2, p) != 1:
+        raise IncompatibleEquationError
+
+    # p - 1 = q * 2^s, q impar
+    q = p - 1
+    s = 0
+
+    while q % 2 == 0:
+        q //= 2
+        s += 1
+
+    # Buscar un no-residuo cuadrático
+    z = 2
+    while pow(z, (p - 1) // 2, p) != p - 1:
+        z += 1
+
+    # Tonelli-Shanks
+    m = s
+    c = pow(z, q, p)
+    x = pow(n, (q + 1) // 2, p)
+    t = pow(n, q, p)
+
+    while t != 1:
+        i = 1
+        aux = t * t % p
+
+        while aux != 1:
+            aux = aux * aux % p
+            i += 1
+
+        b = pow(c, 1 << (m - i - 1), p)
+
+        x = x * b % p
+        b = b * b % p
+        t = t * b % p
+        c = b
+        m = i
+
+    return x
+
+def raiz(n: int, p: int) -> str:
+    """
+    Formatea la salida según el criterio especificado
+    """
+    x1 = raiz_mod_p(n, p)
+    x2 = (-x1) % p
+
+    if x1 == x2:
+        return str(x1)
+
+    if x1 > x2:
+        x1, x2 = x2, x1
+
+    return f"{x1}, {x2}"
 
 
 def ecuacion_cuadratica(a:int,b:int,c:int,p:int)->Tuple[int,int]:
@@ -504,8 +610,29 @@ def ecuacion_cuadratica(a:int,b:int,c:int,p:int)->Tuple[int,int]:
         ecuacion_cuadratica(4,1,5,11)=(3, 5)
         ecuacion_cuadratica(1,2,1,11)=(10,10)
     """
-    #Opcional
-    pass
+    # Opcional
+    # Despejar como x = (-b +- raiz(b^2 - 4ac)) / 2a, /2a será (2a)-1 (mod p)
+    # La raíz puede ser negativa porque -1 (p) = p - 1 (p)
+    discriminante = (b ** 2 - 4 * a * c) % p
+    raiz = raiz_mod_p(discriminante, p)
+    inversa_2a = inversa_mod_p(2 * a, p)
 
+    # X2 > X1
+    x1 = (-b - raiz) * inversa_2a
+    x2 = (-b + raiz) * inversa_2a
 
+    return x2 % p, x1 % p
 
+def ecCuadratica(a: int, b: int, c: int, p: int) -> str:
+    """
+        Formatea la salida según el criterio especificado
+    """
+    x1, x2 = ecuacion_cuadratica(a, b, c, p)
+
+    if x1 == x2:
+        return str(x1)
+
+    if x1 > x2:
+        x1, x2 = x2, x1
+
+    return f"{x1}, {x2}"

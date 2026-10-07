@@ -32,9 +32,9 @@ dicc_operations = {
                     "inv": modular.inversa_mod_p,
                     "euler": modular.euler,
                     "legendre": modular.legendre,
-                    "resolverSistema": modular.resolver_sistema_congruencias,
-                    "raiz": modular.raiz_mod_p,
-                    "ecCuadratica": modular.ecuacion_cuadratica
+                    "resolverSistema": modular.resolverSistema,
+                    "raiz": modular.raiz,
+                    "ecCuadratica": modular.ecCuadratica
                 }
 
 
