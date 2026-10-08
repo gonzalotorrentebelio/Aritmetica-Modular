@@ -20,7 +20,7 @@ def test_raiz_mod_p_no_existe():
 @pytest.mark.parametrize("n,p,salida_esperada",[    
     (2,5,"NE"),
     (2,7,"3, 4"),
-    (9,3,"0, 0"),
+    (9,3,"0"),
     #COMPLETAR 
 ])
 def test_raiz_imatlab(n: int, p:int, salida_esperada: str) -> None:
