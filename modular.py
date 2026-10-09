@@ -317,6 +317,13 @@ def _coprimos(n:int, m:int) -> str:
     return "No"
 
 
+def pow(base:int, exp:int, p:int) -> str:
+    '''
+    Devuelve el resultado de potencia_mod_p() en formato string.
+    
+    '''
+    return str(potencia_mod_p(base, exp, p))
+
 def potencia_mod_p(base:int, exp:int, p:int) -> int:
     """ Calcula potencias módulo p.
 
@@ -335,7 +342,28 @@ def potencia_mod_p(base:int, exp:int, p:int) -> int:
     Examples:
         potencia_mod_p(2,3,7)=1
     """
-    pass
+    if p == 0:
+        raise ZeroDivisionError()
+    
+    if base == 0 and exp == 0:
+        raise ZeroDivisionError()
+    
+    if exp < 0:
+        phi_p = euler(p)
+        exp = exp % phi_p
+
+    base = base % p # resuelve bases negatvas y las que son mayores q 'p'
+    resultado = 1% p # te ahorras el caso especial p == 1 y exp == 0
+    while exp > 0:  # aplicamos la propiedad (a * b) mod p = ((a mod p) * (b mod p)) mod p 
+        if exp % 2 == 1: # lo recorre en modo binario con ayuda de exp = exp//2
+            resultado = (resultado * base) % p
+        
+        base = (base* base) % p  # devuelve la siguiente potencia al cuadrado
+        exp = exp //2  # desplaza un bit hacia la derecha
+    return resultado
+
+def inv(n : int,p: int) -> int:
+    return inversa_mod_p(n,p)
 
 
 def inversa_mod_p(n:int,p:int)->int:
@@ -355,21 +383,22 @@ def inversa_mod_p(n:int,p:int)->int:
         inversa_mod_p(2,7)=4
     """
     if p == 0:
-        raise IncompatibleEquationError
+        raise ZeroDivisionError("El módulo no puede ser 0")
 
-    n %= p
+    # Euclides extendido arrastrando solo el coeficiente de n, que es el único que
+    # necesitamos: de la identidad de Bezout d = n*x + p*y, la inversa es x.
+    r_ant, r_act = p, n % p     # restos sucesivos del algoritmo de Euclides
+    x_ant, x_act = 0, 1         # coeficiente de n en cada uno de esos restos
 
-    resto_anterior, resto = p, n
-    coef_anterior, coef = 0, 1
+    while r_act != 0:
+        q = r_ant // r_act
+        r_ant, r_act = r_act, r_ant - q * r_act
+        x_ant, x_act = x_act, x_ant - q * x_act
 
-    while resto != 0:
-        cociente = resto_anterior // resto
-        resto_anterior, resto, coef_anterior, coef = resto, resto_anterior % resto, coef, coef_anterior - cociente * coef
+    if r_ant != 1:              # el mcd no es 1, luego n no es invertible modulo p
+        raise ZeroDivisionError("n no es invertible módulo p")
 
-    if resto_anterior != 1:
-        raise IncompatibleEquationError
-
-    return coef_anterior % p
+    return x_ant % p            # hacemos el módulo porque x_ant no tiene por qué estar entre 0 y p-1
 
 
 def euler(n:int)->int:
@@ -388,7 +417,17 @@ def euler(n:int)->int:
         euler(7)=6
         euler(15)=8
     """
+    # phi es multiplicativa: phi(p1^e1 * ... * pk^ek) = phi(p1^e1) * ... * phi(pk^ek),
+    # y para una potencia de primo phi(p^e) = p^(e-1) * (p-1)
     pass
+    if n < 1:
+        raise ValueError("n debe ser un entero positivo")
+    
+    resultado = 1
+    for p, e in factorizar(n).items():
+        resultado *= (p - 1) * p ** (e-1)
+
+    return resultado
 
 
 def legendre(n:int,p:int)->int:
@@ -476,7 +515,7 @@ def resolver_sistema_congruencias(alist:List[int],blist:List[int],plist:List[int
 
     return x, m
 
-def resolverSistema(*listas:List[int]) -> Tuple[int, int]:
+def resolverSistema(*listas:List[int]) -> str:
     alist = []
     blist = []
     plist = []
@@ -485,8 +524,8 @@ def resolverSistema(*listas:List[int]) -> Tuple[int, int]:
         blist.append(b)
         plist.append(p)
 
-    return resolver_sistema_congruencias(alist, blist, plist)
-
+    x, m = resolver_sistema_congruencias(alist, blist, plist)
+    return str(F"{x} (mod {m})")
 
 def raiz_mod_p(n:int,p:int)->int:
     """ Encuentra, si existe, una raíz cuadrada para un entero n módulo un número primo p.
@@ -512,7 +551,7 @@ def raiz_mod_p(n:int,p:int)->int:
 
     # p ≡ 3 (mod 4)
     if p % 4 == 3:
-        x = pow(n, (p + 1) // 4, p)
+        x = potencia_mod_p(n, (p + 1) // 4, p)
 
         if x * x % p != n:
             raise IncompatibleEquationError
@@ -521,10 +560,10 @@ def raiz_mod_p(n:int,p:int)->int:
 
     # p ≡ 5 (mod 8)
     if p % 8 == 5:
-        x = pow(n, (p + 3) // 8, p)
+        x = potencia_mod_p(n, (p + 3) // 8, p)
 
         if x * x % p != n:
-            x = x * pow(2, (p - 1) // 4, p) % p
+            x = x * potencia_mod_p(2, (p - 1) // 4, p) % p
 
         if x * x % p != n:
             raise IncompatibleEquationError
@@ -532,7 +571,7 @@ def raiz_mod_p(n:int,p:int)->int:
         return x
 
     # p ≡ 1 (mod 8): primero comprobamos que exista raíz
-    if pow(n, (p - 1) // 2, p) != 1:
+    if potencia_mod_p(n, (p - 1) // 2, p) != 1:
         raise IncompatibleEquationError
 
     # p - 1 = q * 2^s, q impar
@@ -545,14 +584,14 @@ def raiz_mod_p(n:int,p:int)->int:
 
     # Buscar un no-residuo cuadrático
     z = 2
-    while pow(z, (p - 1) // 2, p) != p - 1:
+    while potencia_mod_p(z, (p - 1) // 2, p) != p - 1:
         z += 1
 
     # Tonelli-Shanks
     m = s
-    c = pow(z, q, p)
-    x = pow(n, (q + 1) // 2, p)
-    t = pow(n, q, p)
+    c = potencia_mod_p(z, q, p)
+    x = potencia_mod_p(n, (q + 1) // 2, p)
+    t = potencia_mod_p(n, q, p)
 
     while t != 1:
         i = 1
@@ -562,7 +601,7 @@ def raiz_mod_p(n:int,p:int)->int:
             aux = aux * aux % p
             i += 1
 
-        b = pow(c, 1 << (m - i - 1), p)
+        b = potencia_mod_p(c, 1 << (m - i - 1), p)
 
         x = x * b % p
         b = b * b % p

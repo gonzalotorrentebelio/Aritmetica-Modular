@@ -28,8 +28,8 @@ dicc_operations = {
                     "mcd": modular.mcd_imatlab,
                     "bezout": modular.bezout,
                     "coprimos": modular._coprimos,
-                    "pow": modular.potencia_mod_p,
-                    "inv": modular.inversa_mod_p,
+                    "pow": modular.pow,
+                    "inv": modular.inv,
                     "euler": modular.euler,
                     "legendre": modular.legendre,
                     "resolverSistema": modular.resolverSistema,
@@ -119,7 +119,7 @@ def run_commands(fin:TextIO,fout:TextIO):
                         resultado = llamada(*lista_arg)
                         fout.write(str(resultado) + "\n")
 
-        except modular.IncompatibleEquationError:
+        except (modular.IncompatibleEquationError, ZeroDivisionError):
             fout.write("NE\n")
 
         except (ValueError, TypeError, IndexError):
