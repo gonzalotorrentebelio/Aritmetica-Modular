@@ -8,7 +8,7 @@ from test_imatlab import try_command
     (123, 3, False),
     (8, 65, True),
     (17, 1530, False),
-    (1, 1, True)    
+    (1, 1, True),    
 ])
 def test_coprimos_basico(a: int, b:int, salida_esperada: bool) -> None:
     assert(modular.coprimos(a,b)==salida_esperada)
@@ -20,7 +20,7 @@ def test_coprimos_basico(a: int, b:int, salida_esperada: bool) -> None:
     (123, 3, "No"),
     (8, 65, "Sí"),
     (17, 1530, "No"),
-    (1, 1, "Sí") 
+    (1, 1, "Sí"), 
 ])
 def test_coprimos_imatlab(a:int, b: int, salida_esperada: str) -> None:
     try_command(f"coprimos({a},{b})",salida_esperada)

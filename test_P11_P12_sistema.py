@@ -45,7 +45,7 @@ def test_sistema_incompatible(alist:List[int],blist:List[int],plist:List[int]):
         modular.resolver_sistema_congruencias([6], [5], [9])
 @pytest.mark.parametrize("comando,salida_esperada",[
     ("resolverSistema([2;4;6])", "2 (mod 3)"),
-    ("resolverSistema([1;1;3],[4;7;11])", "10 (mod 33)")
+    ("resolverSistema([1;1;3],[4;7;11])", "10 (mod 33)"),
     ("resolverSistema([3;5;7])", "4 (mod 7)"),
     ("resolverSistema([1;2;5],[1;3;7])", "17 (mod 35)"),
     ("resolverSistema([1;2;6],[1;8;10])", "8 (mod 30)"),

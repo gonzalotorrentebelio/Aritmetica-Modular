@@ -39,10 +39,10 @@ def test_mcd_n_basico(nlist: List[int], salida_esperada: int) -> None:
 
 @pytest.mark.parametrize("nlist,mcd_esperado",[
     ([4,10,14],2),
-    ([5, 7, 9], 1)   
-    ([31, 62, 93], 31)
-    ([123, 69, 333], 3)
-    ([462,1078,1540], 154)
+    ([5, 7, 9], 1),   
+    ([31, 62, 93], 31),
+    ([123, 69, 333], 3),
+    ([462,1078,1540], 154),
 ])
 def test_bezout_n_basico(nlist: List[int], mcd_esperado: int) -> None:
     (d,X)=modular.bezout_n(nlist)
@@ -59,7 +59,7 @@ def test_bezout_n_basico(nlist: List[int], mcd_esperado: int) -> None:
     ("mcd(4,10,14)","2"),
     ("mcd(123,69,333)","3"),
     ("mcd(462,1078,1540)","154"),
-    ("mcd(-84,126,210)","42")
+    ("mcd(-84,126,210)","42"),
 ])
 def test_mcd_n_imatlab(comando:str, salida_esperada: str) -> None:
     try_command(comando,salida_esperada)

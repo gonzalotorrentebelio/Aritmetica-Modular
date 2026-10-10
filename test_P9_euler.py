@@ -4,7 +4,7 @@ from test_imatlab import try_command
 
 @pytest.mark.parametrize("n,salida_esperada",[
     (7,6),
-    (15,8)
+    (15,8),
     (10,4),
     (13,12),
     (16,8),
@@ -15,7 +15,7 @@ def test_euler_basico(n: int, salida_esperada: int) -> None:
 
 @pytest.mark.parametrize("n,salida_esperada",[    
     (7,"6"),
-    (15,"8")
+    (15,"8"),
     (10,"4"),
     (13,"12"),
     (16,"8"),
