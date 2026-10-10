@@ -228,8 +228,8 @@ def bezout(n: int, m: int) -> Tuple[int, int, int]:
     coord_m = [0, 1]
 
     while m != 0:
-        d = n // m
-        n, m, coord_n, coord_m = m, n % m, coord_m, [coord_n[0] - d * coord_m[0], coord_n[1] - d * coord_m[1]] # Algoritmo de euclides, pongo el grande como primero y calculo coords, las de m cambian a las de n y las nuevas de m se calculan como coord_n - (cuantos m quito) * coord_n
+        k = n // m
+        n, m, coord_n, coord_m = m, n % m, coord_m, [coord_n[0] - k * coord_m[0], coord_n[1] - k * coord_m[1]] # Algoritmo de euclides, pongo el grande como primero y calculo coords, las de m cambian a las de n y las nuevas de m se calculan como coord_n - (cuantos m quito) * coord_n
 
     if n < 0:
         n, coord_n = -n, [-coord_n[0], -coord_n[1]] # Si es negativo se pasa a positivo 
