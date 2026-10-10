@@ -451,7 +451,20 @@ def legendre(n:int,p:int)->int:
         legendre(2,7)=1
         legendre(10,5)=0
     """
-    pass
+    if p == 0:
+        raise ZeroDivisionError
+    
+    n %= p
+
+    if n == 0:
+        return 0
+
+    resultado = potencia_mod_p(n, (p - 1) // 2, p) # Criterio de Euler
+
+    if resultado == p - 1:
+        return -1
+
+    return 1
 
 
 def resolver_sistema_congruencias(alist:List[int],blist:List[int],plist:List[int])->Tuple[int,int]:
