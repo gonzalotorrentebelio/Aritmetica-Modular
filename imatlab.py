@@ -4,7 +4,7 @@ imatlab.py
 Matemática Discreta - IMAT
 ICAI, Universidad Pontificia Comillas
 
-Grupo: GPxxx
+Grupo: GP04B
 Integrantes:
     - Gonzalo Miguel Torrente Belío
     - Juan Rincón Pérez
@@ -41,7 +41,7 @@ dicc_operations = {
 def run_commands(fin:TextIO,fout:TextIO):
     """ Recibe un manejador fin de un fichero de texto ya abierto para lectura y otro de un fichero de salida
     ya abierto para escritura y ejecuta línea por línea los comandos proporcionados por fin, escribiendo los resultados en fout.
-    Si fin y fout no corresponden con la entrada y salida esáandar, esta función ejecuta el modo de procesamiento
+    Si fin y fout no corresponden con la entrada y salida estándar, esta función ejecuta el modo de procesamiento
     por lotes de IMAT-LAB para la entrada fin, guardando el resultado en el fichero fout.
 
     Args:
@@ -60,6 +60,7 @@ def run_commands(fin:TextIO,fout:TextIO):
     # leer linea
     #separamos la función de operación de los argumentos
     cond = True
+    is_interactivo = fin is sys.stdin and fout is sys.stdout # Comprobamos si estamos en modo interactivo para mostrar errores personalizados
     while cond:
         try:
             linea = fin.readline()
@@ -72,7 +73,7 @@ def run_commands(fin:TextIO,fout:TextIO):
                 a = linea.find("(")
 
                 if a == -1 or not linea.endswith(")"):
-                    fout.write("NOP\n")
+                    raise ValueError("Los comandos deben introducir los argumentos entre paréntesis")
 
                 else:
                     operacion = linea[:a].strip()
@@ -101,7 +102,7 @@ def run_commands(fin:TextIO,fout:TextIO):
                                 contenido = argumento[1:-1]
 
                                 if contenido.strip() == "":
-                                    raise ValueError
+                                    raise ValueError("No se han introducido argumentos")
 
                                 argumentos_lista = contenido.split(";")
                                 nueva_lista = []
@@ -118,12 +119,18 @@ def run_commands(fin:TextIO,fout:TextIO):
 
                         resultado = llamada(*lista_arg)
                         fout.write(str(resultado) + "\n")
+                        
+        except (modular.IncompatibleEquationError, ZeroDivisionError) as error:
+            if not is_interactivo:
+                fout.write(f"NE\n")
+            else:
+                fout.write(f"{error}\n")
 
-        except (modular.IncompatibleEquationError, ZeroDivisionError):
-            fout.write("NE\n")
-
-        except (ValueError, TypeError, IndexError):
-            fout.write("NOP\n")
+        except (ValueError, TypeError, IndexError) as error:
+            if not is_interactivo:
+                fout.write(f"NOP\n")
+            else:
+                fout.write(f"{error}\n")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ import modular
 from test_imatlab import try_command
 
 @pytest.mark.parametrize("n,salida_esperada",[
-    #(1,COMPLETAR),
+    (1, {}),
     (2,{2:1}),
     (12,{2:2,3:1}),
     (0,{}),
@@ -15,7 +15,7 @@ def test_factorizar_basico(n: int, salida_esperada: Dict[int,int]) -> None:
 
 
 @pytest.mark.parametrize("n,salida_esperada",[
-    #(1,COMPLETAR),
+    (1, "1"),
     (2,"2: 1"),
     (12,"2: 2, 3: 1"),
     (0,"0"),

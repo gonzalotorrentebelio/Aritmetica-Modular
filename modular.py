@@ -4,10 +4,10 @@ modular.py
 Matemática Discreta - IMAT
 ICAI, Universidad Pontificia Comillas
 
-Grupo: GPxxx
+Grupo: GP04B
 Integrantes:
     - Juan Rincón Pérez
-    - XX
+    - Gonzalo Miguel Torrente Belió
 
 Descripción:
 Librería para la realización de cálculos y resolución de problemas de aritmética modular.
@@ -184,7 +184,7 @@ def mcd_imatlab(*args):
         return mcd(args[0], args[1])
     return mcd_n(list(args))
 
-def mcd(a:int,b:int = 0)->int:
+def mcd(a:int,b:int)->int:
     """ Calcula el máximo común divisor de dos enteros a y b.
     Args:
         a (int): Primer entero.
@@ -251,7 +251,7 @@ def mcd_n(nlist:List[int])-> int:
         mcd([4,10,14])=2
     """
     # Opcional
-    resultado = nlist[0]
+    resultado = abs(nlist[0])
 
     for i in nlist[1:]:
         resultado = mcd(resultado, i)
@@ -343,23 +343,25 @@ def potencia_mod_p(base:int, exp:int, p:int) -> int:
         potencia_mod_p(2,3,7)=1
     """
     if p == 0:
-        raise ZeroDivisionError()
-    
+        raise ZeroDivisionError("El módulo no pueden ser 0")
+
     if base == 0 and exp == 0:
         raise ZeroDivisionError()
-    
-    if exp < 0:
-        phi_p = euler(p)
-        exp = exp % phi_p
 
-    base = base % p # resuelve bases negatvas y las que son mayores q 'p'
-    resultado = 1% p # te ahorras el caso especial p == 1 y exp == 0
-    while exp > 0:  # aplicamos la propiedad (a * b) mod p = ((a mod p) * (b mod p)) mod p 
-        if exp % 2 == 1: # lo recorre en modo binario con ayuda de exp = exp//2
+    if exp < 0:
+        base = inversa_mod_p(base, p)
+        exp = -exp
+
+    base = base % p
+    resultado = 1 % p
+
+    while exp > 0:
+        if exp % 2 == 1:
             resultado = (resultado * base) % p
-        
-        base = (base* base) % p  # devuelve la siguiente potencia al cuadrado
-        exp = exp //2  # desplaza un bit hacia la derecha
+
+        base = (base * base) % p
+        exp = exp // 2
+
     return resultado
 
 def inv(n : int,p: int) -> int:
@@ -396,7 +398,7 @@ def inversa_mod_p(n:int,p:int)->int:
         x_ant, x_act = x_act, x_ant - q * x_act
 
     if r_ant != 1:              # el mcd no es 1, luego n no es invertible modulo p
-        raise ZeroDivisionError("n no es invertible módulo p")
+        raise ZeroDivisionError(f" {n} no es invertible módulo {p}, tienen factores comunes")
 
     return x_ant % p            # hacemos el módulo porque x_ant no tiene por qué estar entre 0 y p-1
 
@@ -419,9 +421,8 @@ def euler(n:int)->int:
     """
     # phi es multiplicativa: phi(p1^e1 * ... * pk^ek) = phi(p1^e1) * ... * phi(pk^ek),
     # y para una potencia de primo phi(p^e) = p^(e-1) * (p-1)
-    pass
     if n < 1:
-        raise ValueError("n debe ser un entero positivo")
+        raise ValueError(f"El número introducido \"{n}\" debe ser un entero positivo")
     
     resultado = 1
     for p, e in factorizar(n).items():
@@ -452,7 +453,7 @@ def legendre(n:int,p:int)->int:
         legendre(10,5)=0
     """
     if p == 0:
-        raise ZeroDivisionError
+        raise ZeroDivisionError("El módulo no puede ser 0")
     
     n %= p
 
@@ -506,7 +507,7 @@ def resolver_sistema_congruencias(alist:List[int],blist:List[int],plist:List[int
         div = mcd(a, p)
 
         if b % div != 0:
-            raise IncompatibleEquationError
+            raise IncompatibleEquationError("La ecuación no tiene solución")
 
         a, b, p = a // div, b // div, p // div
         r = (inversa_mod_p(a, p) * b) % p
@@ -514,7 +515,7 @@ def resolver_sistema_congruencias(alist:List[int],blist:List[int],plist:List[int
         div = mcd(m, p)
 
         if (r - x) % div != 0: # Como r - x sería nuestra b inicial no hay sol si b % div != 0
-            raise IncompatibleEquationError
+            raise IncompatibleEquationError("La ecuación no tiene solución")
 
         m_red = m // div
         p_red = p // div
@@ -562,14 +563,13 @@ def raiz_mod_p(n:int,p:int)->int:
     if p == 2 or n == 0:
         return n
 
+    # Comprobamos una sola vez si n tiene raíz
+    if legendre(n, p) == -1:
+        raise IncompatibleEquationError(f"No existe raíz de {n} módulo {p}")
+
     # p ≡ 3 (mod 4)
     if p % 4 == 3:
-        x = potencia_mod_p(n, (p + 1) // 4, p)
-
-        if x * x % p != n:
-            raise IncompatibleEquationError
-
-        return x
+        return potencia_mod_p(n, (p + 1) // 4, p)
 
     # p ≡ 5 (mod 8)
     if p % 8 == 5:
@@ -578,16 +578,9 @@ def raiz_mod_p(n:int,p:int)->int:
         if x * x % p != n:
             x = x * potencia_mod_p(2, (p - 1) // 4, p) % p
 
-        if x * x % p != n:
-            raise IncompatibleEquationError
-
         return x
 
-    # p ≡ 1 (mod 8): primero comprobamos que exista raíz
-    if potencia_mod_p(n, (p - 1) // 2, p) != 1:
-        raise IncompatibleEquationError
-
-    # p - 1 = q * 2^s, q impar
+    # p ≡ 1 (mod 8)
     q = p - 1
     s = 0
 
@@ -595,12 +588,11 @@ def raiz_mod_p(n:int,p:int)->int:
         q //= 2
         s += 1
 
-    # Buscar un no-residuo cuadrático
+    # Buscamos un no-residuo cuadrático
     z = 2
-    while potencia_mod_p(z, (p - 1) // 2, p) != p - 1:
+    while legendre(z, p) != -1:
         z += 1
 
-    # Tonelli-Shanks
     m = s
     c = potencia_mod_p(z, q, p)
     x = potencia_mod_p(n, (q + 1) // 2, p)
@@ -614,7 +606,7 @@ def raiz_mod_p(n:int,p:int)->int:
             aux = aux * aux % p
             i += 1
 
-        b = potencia_mod_p(c, 1 << (m - i - 1), p)
+        b = potencia_mod_p(c, 2 ** (m - i - 1), p)
 
         x = x * b % p
         b = b * b % p
@@ -666,14 +658,16 @@ def ecuacion_cuadratica(a:int,b:int,c:int,p:int)->Tuple[int,int]:
     # Despejar como x = (-b +- raiz(b^2 - 4ac)) / 2a, /2a será (2a)-1 (mod p)
     # La raíz puede ser negativa porque -1 (p) = p - 1 (p)
     discriminante = (b ** 2 - 4 * a * c) % p
-    raiz = raiz_mod_p(discriminante, p)
-    inversa_2a = inversa_mod_p(2 * a, p)
-
-    # X2 > X1
-    x1 = (-b - raiz) * inversa_2a
-    x2 = (-b + raiz) * inversa_2a
-
-    return x2 % p, x1 % p
+    try:
+        raiz = raiz_mod_p(discriminante, p)
+        inversa_2a = inversa_mod_p(2 * a, p)
+        x1 = (-b - raiz) * inversa_2a
+        x2 = (-b + raiz) * inversa_2a
+        
+        return x2 % p, x1 % p
+    except (IncompatibleEquationError, ZeroDivisionError):
+        raise IncompatibleEquationError("La ecuación no tiene solución")
+    
 
 def ecCuadratica(a: int, b: int, c: int, p: int) -> str:
     """
