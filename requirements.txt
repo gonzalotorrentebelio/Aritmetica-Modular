@@ -1,0 +1,4 @@
+# IMAT-LAB · Aritmética modular
+# modular.py, imatlab.py e imatlab_benchmark.py solo usan la biblioteca estándar
+# de Python (>= 3.8). La única dependencia externa es pytest, para los tests.
+pytest>=7.0
